@@ -113,7 +113,7 @@
   .bubble::after {
     content: "";
     position: absolute;
-    bottom: -46px; left: 22%;
+    bottom: -46px; left: 28%;
     width: 46px; height: 50px;
     background: var(--bubble);
     border-right: 4px solid var(--ink);
@@ -166,15 +166,24 @@
   /* The speaker: a 1950s pinup in a polka-dot dress whose face follows the rage meter */
   .speaker {
     display: block;
-    width: min(280px, 66vw);
+    width: min(300px, 74vw);
     height: auto;
-    margin: 6px 0 0 calc(22% - 92px);
+    margin: 4px 0 0 max(0px, calc(28% - 150px));
     overflow: visible;
   }
-  .speaker .ln { stroke: #1d1410; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
-  .speaker .brow { fill: none; stroke: #1d1410; stroke-width: 4; stroke-linecap: round; transition: transform .25s; }
-  .speaker .brow-l { transform-origin: 96px 100px; }
-  .speaker .brow-r { transform-origin: 164px 100px; }
+  .speaker .ln { stroke: #8a4a32; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .speaker .limb, .speaker .limb-o { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .speaker .limb { stroke: #f4bf9b; stroke-width: 24; }
+  .speaker .limb-o { stroke: #8a4a32; stroke-width: 28; }
+  .speaker .limb.leg { stroke-width: 32; }
+  .speaker .limb-o.leg { stroke-width: 36; }
+  .speaker .arm-up { transform-origin: 202px 176px; animation: wave 2.4s ease-in-out infinite; }
+  .speaker[data-mood="angry"] .arm-up, .speaker[data-mood="nuclear"] .arm-up { animation: shake .22s linear infinite; }
+  @keyframes wave { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(8deg); } }
+  @keyframes shake { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  .speaker .brow { fill: none; stroke: #8a3013; stroke-width: 3.5; stroke-linecap: round; transition: transform .25s; }
+  .speaker .brow-l { transform-origin: 121px 78px; }
+  .speaker .brow-r { transform-origin: 179px 78px; }
   .speaker .flush { fill: #e8352b; opacity: 0; transition: opacity .3s; }
   .speaker .mouth, .speaker .steam, .speaker .vein { display: none; }
   .speaker[data-mood="calm"] .m-smile,
@@ -191,7 +200,7 @@
   .speaker[data-mood="nuclear"] .flush { opacity: .4; }
   .speaker[data-mood="nuclear"] .steam { display: inline; animation: puff 1s ease-out infinite; }
   .speaker[data-mood="nuclear"] .steam-r { animation-delay: -.5s; }
-  .speaker[data-mood="nuclear"] .head { animation: quake .3s infinite; transform-origin: 130px 200px; }
+  .speaker[data-mood="nuclear"] .head { animation: quake .3s infinite; transform-origin: 150px 150px; }
   @keyframes puff {
     0% { transform: translateY(8px) scale(.6); opacity: 0; }
     30% { opacity: 1; }
@@ -240,10 +249,10 @@
     .meter-label, .verdict { min-width: 0; }
     .bubble { padding: 36px 22px; }
     .burst { font-size: 24px; padding: 18px 16px; right: 0; }
-    .speaker { margin-left: calc(22% - 70px); }
+    .speaker { margin-left: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .g span, .bubble.fury, .speaker .steam, .speaker .head { animation: none !important; }
+    .g span, .bubble.fury, .speaker .steam, .speaker .head, .speaker .arm-up { animation: none !important; }
   }
 </style>
 </head>
@@ -271,67 +280,104 @@
   <section class="stage" aria-live="polite">
     <div class="burst" id="burst">POW!</div>
     <div class="bubble empty" id="bubble">…</div>
-    <svg class="speaker" id="speaker" data-mood="calm" viewBox="0 0 260 280" role="img" aria-label="A 1950s pinup woman in a polka-dot dress, saying the words in the bubble">
+    <svg class="speaker" id="speaker" data-mood="calm" viewBox="0 0 300 440" role="img" aria-label="A curvy 1950s pinup woman with curly red hair and a teal sundress, saying the words in the bubble">
       <defs>
-        <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
-          <rect width="16" height="16" fill="#d8322a"/>
-          <circle cx="4" cy="4" r="2.6" fill="#fff6e8"/>
-          <circle cx="12" cy="12" r="2.6" fill="#fff6e8"/>
+        <radialGradient id="skin" cx=".38" cy=".32" r=".8">
+          <stop offset="0" stop-color="#fde4cf"/><stop offset=".55" stop-color="#f6c19d"/><stop offset="1" stop-color="#e3977a"/>
+        </radialGradient>
+        <radialGradient id="hair" cx=".35" cy=".3" r=".8">
+          <stop offset="0" stop-color="#f39457"/><stop offset=".55" stop-color="#c9531f"/><stop offset="1" stop-color="#8a3013"/>
+        </radialGradient>
+        <radialGradient id="dress" cx=".4" cy=".25" r=".9">
+          <stop offset="0" stop-color="#6fd3c4"/><stop offset=".55" stop-color="#2a9d8f"/><stop offset="1" stop-color="#196a60"/>
+        </radialGradient>
+        <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="5" cy="5" r="2.6" fill="#fffaf0" opacity=".55"/><circle cx="14" cy="14" r="2.6" fill="#fffaf0" opacity=".55"/>
         </pattern>
-        <clipPath id="face"><ellipse cx="130" cy="122" rx="52" ry="60"/></clipPath>
+        <clipPath id="face"><ellipse cx="150" cy="96" rx="46" ry="48"/></clipPath>
       </defs>
-      <!-- shoulders and dress -->
-      <path class="ln" fill="#f6c9a8" d="M40 280 C50 232 88 208 130 208 C172 208 210 232 220 280 Z"/>
-      <path class="ln" fill="#f6c9a8" d="M112 160 L112 212 Q130 224 148 212 L148 160 Z"/>
-      <path class="ln" fill="url(#dots)" d="M32 280 C38 244 66 226 98 222 Q130 256 162 222 C194 226 222 244 228 280 Z"/>
-      <path class="ln" fill="none" d="M98 222 Q104 214 112 210 M162 222 Q156 214 148 210"/>
+
+      <!-- legs and shoes -->
+      <path class="limb-o leg" d="M124 368 L119 416 M176 368 L181 416"/>
+      <path class="limb leg" d="M124 368 L119 416 M176 368 L181 416"/>
+      <ellipse class="ln" fill="#d8322a" cx="114" cy="428" rx="22" ry="9"/>
+      <ellipse class="ln" fill="#d8322a" cx="186" cy="428" rx="22" ry="9"/>
+
+      <!-- neck, shoulders, dress -->
+      <path class="ln" fill="url(#skin)" d="M135 126 L135 158 L165 158 L165 126 Z"/>
+      <path class="ln" fill="url(#skin)" d="M94 176 C98 156 122 146 150 146 C178 146 202 156 206 176 L202 206 L98 206 Z"/>
+      <path fill="none" stroke="#c97c5d" stroke-width="1.8" stroke-linecap="round" opacity=".7" d="M140 170 Q150 176 160 170"/>
+      <path class="ln" fill="url(#skin)" d="M90 256 C64 302 52 342 44 368 Q150 394 256 368 C248 342 236 302 210 256 Z"/>
+      <path class="ln" fill="url(#dress)" d="M90 256 C64 302 52 342 44 368 Q150 394 256 368 C248 342 236 302 210 256 Z"/>
+      <path fill="url(#dots)" d="M90 256 C64 302 52 342 44 368 Q150 394 256 368 C248 342 236 302 210 256 Z"/>
+      <path fill="none" stroke="#165c53" stroke-width="2" opacity=".45" stroke-linecap="round" d="M120 264 Q108 322 100 380 M150 264 L150 386 M180 264 Q192 322 200 380"/>
+      <path fill="none" stroke="#fffaf0" stroke-width="5" stroke-linecap="round" d="M46 366 Q150 392 254 366"/>
+      <path class="ln" fill="url(#dress)" d="M102 178 Q126 196 150 184 Q174 196 198 178 C214 198 218 228 212 254 L88 254 C82 228 86 198 102 178 Z"/>
+      <path fill="url(#dots)" d="M102 178 Q126 196 150 184 Q174 196 198 178 C214 198 218 228 212 254 L88 254 C82 228 86 198 102 178 Z"/>
+      <path fill="none" stroke="#2a9d8f" stroke-width="7" stroke-linecap="round" d="M108 182 L114 158 M192 182 L186 158"/>
+      <rect class="ln" fill="#d8322a" x="86" y="246" width="128" height="13" rx="6.5"/>
+      <rect fill="none" stroke="#ffd27a" stroke-width="2.5" x="143" y="247.5" width="14" height="10" rx="2"/>
+
+      <!-- arm on hip -->
+      <path class="limb-o" d="M98 176 Q66 206 70 228 Q76 248 102 250"/>
+      <path class="limb" d="M98 176 Q66 206 70 228 Q76 248 102 250"/>
+
+      <!-- raised arm: waves when calm, shakes a fist when angry -->
+      <g class="arm-up">
+        <path class="limb-o" d="M202 176 Q236 166 240 150 Q244 130 234 112"/>
+        <path class="limb" d="M202 176 Q236 166 240 150 Q244 130 234 112"/>
+        <circle class="ln" fill="url(#skin)" cx="232" cy="102" r="15"/>
+        <path fill="none" stroke="#c97c5d" stroke-width="1.8" stroke-linecap="round" d="M224 96 Q232 92 240 96 M223 103 Q232 99 241 103"/>
+      </g>
+
       <g class="head">
-        <!-- back hair -->
-        <path class="ln" fill="#2a1a14" d="M74 128 C62 66 98 42 130 42 C162 42 198 66 186 128 C192 156 188 176 176 188 C166 172 172 152 174 138 L86 138 C88 152 94 172 84 188 C72 176 68 156 74 128 Z"/>
-        <circle class="ln" fill="#2a1a14" cx="82" cy="182" r="14"/>
-        <circle class="ln" fill="#2a1a14" cx="178" cy="182" r="14"/>
-        <!-- ears and pearls -->
-        <ellipse class="ln" fill="#f6c9a8" cx="79" cy="128" rx="8" ry="12"/>
-        <ellipse class="ln" fill="#f6c9a8" cx="181" cy="128" rx="8" ry="12"/>
-        <circle class="ln" fill="#fffaf0" cx="79" cy="146" r="5"/>
-        <circle class="ln" fill="#fffaf0" cx="181" cy="146" r="5"/>
+        <!-- curls behind the face -->
+        <g fill="url(#hair)" class="ln">
+          <circle cx="108" cy="72" r="22"/><circle cx="194" cy="72" r="22"/>
+          <circle cx="102" cy="98" r="19"/><circle cx="198" cy="98" r="19"/>
+          <circle cx="106" cy="122" r="15"/><circle cx="194" cy="122" r="15"/>
+          <circle cx="126" cy="52" r="24"/><circle cx="174" cy="52" r="24"/><circle cx="150" cy="44" r="26"/>
+        </g>
         <!-- face -->
-        <ellipse class="ln" fill="#f6c9a8" cx="130" cy="122" rx="52" ry="60"/>
-        <ellipse class="flush" cx="130" cy="122" rx="52" ry="60" clip-path="url(#face)"/>
-        <circle fill="#f08a8a" opacity=".55" cx="98" cy="142" r="9"/>
-        <circle fill="#f08a8a" opacity=".55" cx="162" cy="142" r="9"/>
-        <!-- victory rolls and bangs -->
-        <path class="ln" fill="#2a1a14" d="M80 98 C84 66 110 58 130 72 C150 58 176 66 180 98 C166 84 146 82 130 90 C114 82 94 84 80 98 Z"/>
-        <circle class="ln" fill="#2a1a14" cx="96" cy="60" r="28"/>
-        <circle class="ln" fill="#2a1a14" cx="164" cy="60" r="28"/>
-        <path fill="none" stroke="#6b4632" stroke-width="2.5" stroke-linecap="round" d="M96 46 a14 14 0 1 1 -14 14 M164 46 a14 14 0 1 0 14 14"/>
-        <!-- polka-dot bow -->
-        <path class="ln" fill="url(#dots)" d="M130 40 L104 26 Q97 40 104 54 Z M130 40 L156 26 Q163 40 156 54 Z"/>
-        <circle class="ln" fill="#d8322a" cx="130" cy="40" r="7"/>
+        <ellipse class="ln" fill="url(#skin)" cx="150" cy="96" rx="46" ry="48"/>
+        <ellipse class="flush" cx="150" cy="96" rx="46" ry="48" clip-path="url(#face)"/>
+        <path fill="none" stroke="#c97c5d" stroke-width="1.8" stroke-linecap="round" opacity=".6" d="M134 141 Q150 150 166 141"/>
+        <ellipse fill="#f07a7a" opacity=".5" cx="122" cy="112" rx="12" ry="9"/>
+        <ellipse fill="#f07a7a" opacity=".5" cx="178" cy="112" rx="12" ry="9"/>
+        <!-- bangs and bow -->
+        <g fill="url(#hair)" class="ln">
+          <circle cx="126" cy="62" r="16"/><circle cx="150" cy="56" r="17"/><circle cx="174" cy="62" r="16"/>
+        </g>
+        <path class="ln" fill="#2a9d8f" d="M186 44 L170 30 Q164 42 172 54 Z M186 44 L202 30 Q208 42 200 54 Z"/>
+        <circle class="ln" fill="#2a9d8f" cx="186" cy="44" r="5.5"/>
         <!-- anger vein -->
-        <path class="vein" fill="none" stroke="#e8352b" stroke-width="3.5" stroke-linecap="round" d="M166 82 q4 4 0 8 M174 82 q-4 4 0 8 M164 92 q4 -4 8 0 M164 80 q4 4 8 0"/>
+        <path class="vein" fill="none" stroke="#e8352b" stroke-width="3.5" stroke-linecap="round" d="M114 40 q4 4 0 8 M122 40 q-4 4 0 8 M112 50 q4 -4 8 0 M112 38 q4 4 8 0"/>
         <!-- eyes -->
-        <ellipse class="ln" fill="#fff" cx="108" cy="120" rx="11" ry="8"/>
-        <ellipse class="ln" fill="#fff" cx="152" cy="120" rx="11" ry="8"/>
-        <circle fill="#3a6fb0" cx="109" cy="121" r="6"/><circle fill="#111" cx="109" cy="121" r="3"/><circle fill="#fff" cx="111" cy="119" r="1.5"/>
-        <circle fill="#3a6fb0" cx="151" cy="121" r="6"/><circle fill="#111" cx="151" cy="121" r="3"/><circle fill="#fff" cx="153" cy="119" r="1.5"/>
-        <path fill="none" stroke="#1d1410" stroke-width="3.5" stroke-linecap="round" d="M95 117 Q108 106 121 116 M95 117 L88 111 M139 116 Q152 106 165 117 M165 117 L172 111"/>
-        <path class="brow brow-l" d="M96 100 Q108 91 120 98"/>
-        <path class="brow brow-r" d="M140 98 Q152 91 164 100"/>
-        <!-- nose and beauty mark -->
-        <path fill="none" stroke="#b9805e" stroke-width="2.5" stroke-linecap="round" d="M129 128 Q133 138 126 140"/>
-        <circle fill="#2a1a14" cx="157" cy="153" r="2"/>
+        <ellipse class="ln" fill="#fff" cx="132" cy="96" rx="9" ry="10.5"/>
+        <ellipse class="ln" fill="#fff" cx="168" cy="96" rx="9" ry="10.5"/>
+        <circle fill="#3f8a55" cx="133" cy="97" r="6.5"/><circle fill="#1a1a1a" cx="133" cy="97" r="3.4"/><circle fill="#fff" cx="135.5" cy="94.5" r="1.8"/>
+        <circle fill="#3f8a55" cx="167" cy="97" r="6.5"/><circle fill="#1a1a1a" cx="167" cy="97" r="3.4"/><circle fill="#fff" cx="169.5" cy="94.5" r="1.8"/>
+        <path fill="none" stroke="#3a1d12" stroke-width="3" stroke-linecap="round" d="M122 93 Q132 82 142 92 M122 93 L117 89 M124 89 L120 84 M158 92 Q168 82 178 93 M178 93 L183 89 M176 89 L180 84"/>
+        <path class="brow brow-l" d="M121 78 Q132 70 143 76"/>
+        <path class="brow brow-r" d="M157 76 Q168 70 179 78"/>
+        <!-- button nose -->
+        <path fill="none" stroke="#c97c5d" stroke-width="2.2" stroke-linecap="round" d="M145 108 Q150 114 156 109"/>
+        <circle fill="#fff" opacity=".6" cx="151" cy="105" r="2"/>
         <!-- mouths, one per mood -->
-        <path class="mouth m-smile ln" fill="#d0202a" d="M113 153 Q122 148 130 151 Q138 148 147 153 Q130 168 113 153 Z"/>
-        <path class="mouth m-purse ln" fill="#d0202a" d="M118 157 Q124 152 130 155 Q136 152 142 157 Q130 162 118 157 Z"/>
+        <g class="mouth m-smile">
+          <path fill="#8a1f2a" stroke="#d23b4a" stroke-width="3" stroke-linejoin="round" d="M133 120 Q150 142 167 120 Q150 126 133 120 Z"/>
+          <path fill="#fff" d="M137 122 Q150 127 163 122 L161 126 Q150 130 139 126 Z"/>
+        </g>
+        <path class="mouth m-purse" fill="#d23b4a" stroke="#a52434" stroke-width="1.5" d="M140 126 Q145 120 150 123 Q155 120 160 126 Q150 131 140 126 Z"/>
         <g class="mouth m-shout">
-          <ellipse fill="#5a1010" stroke="#d0202a" stroke-width="5" cx="130" cy="160" rx="13" ry="11"/>
-          <rect fill="#fff" x="122" y="151" width="16" height="4" rx="1"/>
+          <ellipse fill="#6b1420" stroke="#d23b4a" stroke-width="4" cx="150" cy="128" rx="12" ry="13"/>
+          <rect fill="#fff" x="142" y="117.5" width="16" height="4" rx="1.5"/>
         </g>
       </g>
+
       <!-- steam -->
-      <g class="steam steam-l"><circle class="ln" fill="#fff" cx="52" cy="78" r="9"/><circle class="ln" fill="#fff" cx="42" cy="64" r="11"/><circle class="ln" fill="#fff" cx="54" cy="52" r="8"/></g>
-      <g class="steam steam-r"><circle class="ln" fill="#fff" cx="208" cy="78" r="9"/><circle class="ln" fill="#fff" cx="218" cy="64" r="11"/><circle class="ln" fill="#fff" cx="206" cy="52" r="8"/></g>
+      <g class="steam steam-l"><circle class="ln" fill="#fff" cx="72" cy="58" r="9"/><circle class="ln" fill="#fff" cx="62" cy="44" r="11"/><circle class="ln" fill="#fff" cx="74" cy="32" r="8"/></g>
+      <g class="steam steam-r"><circle class="ln" fill="#fff" cx="222" cy="40" r="8"/><circle class="ln" fill="#fff" cx="234" cy="28" r="10"/><circle class="ln" fill="#fff" cx="224" cy="16" r="7"/></g>
     </svg>
   </section>
 

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grawlix Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fff6d6;
+    --dots: #f3c94a;
+    --ink: #161616;
+    --bubble: #ffffff;
+    --pow: #e8352b;
+    --zap: #1f6fd1;
+    --muted: #5b5444;
+    --meter-bg: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1b1830; --dots: #2d2850; --ink: #f4efe1; --bubble: #262243;
+      --pow: #ff5a4e; --zap: #5aa2ff; --muted: #b9b2d6; --meter-bg: #14122a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1b1830; --dots: #2d2850; --ink: #f4efe1; --bubble: #262243;
+    --pow: #ff5a4e; --zap: #5aa2ff; --muted: #b9b2d6; --meter-bg: #14122a;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--dots) 22%, transparent 24%);
+    background-size: 14px 14px;
+    font-family: "Comic Neue", "Comic Sans MS", system-ui, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+
+  h1 {
+    font-family: Bangers, Impact, sans-serif;
+    font-weight: 400;
+    font-size: clamp(48px, 12vw, 92px);
+    letter-spacing: 2px;
+    line-height: .95;
+    margin: 0 0 8px;
+    color: var(--pow);
+    -webkit-text-stroke: 2px var(--ink);
+    text-shadow: 5px 5px 0 var(--ink);
+    transform: rotate(-2deg);
+  }
+  .tag { margin: 0 0 28px; font-size: 18px; color: var(--muted); font-weight: 700; }
+
+  .panel {
+    background: var(--bubble);
+    border: 4px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 18px;
+    margin-bottom: 36px;
+  }
+  label { display: block; font-family: Bangers, Impact, sans-serif; font-size: 22px; letter-spacing: 1px; margin-bottom: 8px; }
+  textarea {
+    width: 100%;
+    min-height: 92px;
+    resize: vertical;
+    font: 700 18px/1.4 "Comic Neue", system-ui, sans-serif;
+    color: var(--ink);
+    background: transparent;
+    border: 3px dashed var(--muted);
+    padding: 10px 12px;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--zap); border-style: solid; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; align-items: center; }
+  button {
+    font-family: Bangers, Impact, sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--ink);
+    background: var(--dots);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: transform .08s, box-shadow .08s;
+  }
+  button:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+  button.primary { background: var(--pow); color: #fff; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; margin-left: auto; }
+  .toggle input { width: 20px; height: 20px; accent-color: var(--pow); }
+
+  /* Speech bubble */
+  .stage { position: relative; padding-bottom: 70px; }
+  .bubble {
+    position: relative;
+    background: var(--bubble);
+    border: 4px solid var(--ink);
+    border-radius: 48% 52% 46% 54% / 58% 50% 50% 42%;
+    padding: 46px 40px;
+    min-height: 170px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font: 700 clamp(22px, 5vw, 32px)/1.35 "Comic Neue", system-ui, sans-serif;
+    box-shadow: 8px 8px 0 var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -46px; left: 22%;
+    width: 46px; height: 50px;
+    background: var(--bubble);
+    border-right: 4px solid var(--ink);
+    border-bottom: 4px solid var(--ink);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    transform: skewX(-25deg);
+  }
+  .bubble.empty { color: var(--muted); font-style: italic; font-weight: 400; }
+  .bubble.fury { animation: quake .25s infinite; }
+
+  .g {
+    display: inline-block;
+    color: var(--pow);
+    font-family: Bangers, Impact, sans-serif;
+    letter-spacing: 1px;
+    cursor: help;
+    position: relative;
+  }
+  .g span { display: inline-block; animation: jitter .6s infinite; }
+  .g span:nth-child(3n)   { color: var(--zap); animation-delay: -.2s; }
+  .g span:nth-child(3n+1) { animation-delay: -.4s; }
+  .g[data-word]:hover::after, .g[data-word]:focus::after {
+    content: attr(data-word);
+    position: absolute;
+    left: 50%; bottom: 110%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    font: 700 14px "Comic Neue", sans-serif;
+    padding: 3px 8px;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .g:focus { outline: 2px dotted var(--zap); outline-offset: 2px; }
+
+  @keyframes jitter {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    25% { transform: translate(-1px, -2px) rotate(-6deg); }
+    50% { transform: translate(1px, 1px) rotate(4deg); }
+    75% { transform: translate(-1px, 2px) rotate(-3deg); }
+  }
+  @keyframes quake {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    25% { transform: translate(-3px, 2px) rotate(-.6deg); }
+    50% { transform: translate(3px, -2px) rotate(.6deg); }
+    75% { transform: translate(-2px, -3px) rotate(-.3deg); }
+  }
+
+  /* Rage meter */
+  .meter { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+  .meter-label { font-family: Bangers, Impact, sans-serif; font-size: 22px; letter-spacing: 1px; min-width: 120px; }
+  .bar { flex: 1; height: 26px; border: 3px solid var(--ink); background: var(--meter-bg); position: relative; overflow: hidden; }
+  .fill {
+    height: 100%;
+    width: 0;
+    background: repeating-linear-gradient(-45deg, var(--pow) 0 12px, #ff8a3d 12px 24px);
+    transition: width .35s cubic-bezier(.3, 1.6, .5, 1);
+  }
+  .verdict { font-family: Bangers, Impact, sans-serif; font-size: 22px; min-width: 132px; text-align: right; color: var(--pow); }
+
+  /* Pow burst */
+  .burst {
+    position: absolute;
+    right: 4px; top: -26px;
+    font-family: Bangers, Impact, sans-serif;
+    font-size: 34px;
+    color: #fff;
+    background: var(--pow);
+    padding: 26px 22px;
+    clip-path: polygon(50% 0, 61% 30%, 98% 18%, 72% 46%, 100% 70%, 64% 68%, 56% 100%, 44% 70%, 6% 88%, 30% 58%, 0 30%, 38% 32%);
+    transform: rotate(12deg) scale(0);
+    transition: transform .25s cubic-bezier(.3, 1.8, .5, 1);
+    pointer-events: none;
+    -webkit-text-stroke: 1px var(--ink);
+  }
+  .burst.show { transform: rotate(12deg) scale(1); }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .presets button { font-size: 16px; padding: 4px 10px; box-shadow: 3px 3px 0 var(--ink); background: var(--bubble); }
+
+  footer { margin-top: 40px; color: var(--muted); font-size: 15px; }
+  code { font-family: ui-monospace, monospace; background: var(--bubble); border: 2px solid var(--ink); padding: 0 5px; }
+
+  @media (max-width: 520px) {
+    .toggle { margin-left: 0; }
+    .meter { flex-wrap: wrap; }
+    .meter-label, .verdict { min-width: 0; }
+    .bubble { padding: 36px 22px; }
+    .burst { font-size: 24px; padding: 18px 16px; right: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .g span, .bubble.fury { animation: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Grawlix Machine</h1>
+  <p class="tag">Type something rude and get it back as cartoon swearing. Hover a symbol to see the word underneath.</p>
+
+  <section class="panel">
+    <label for="input">Say it. Go on.</label>
+    <textarea id="input" spellcheck="false" placeholder="e.g. the damn printer jammed again"></textarea>
+    <div class="controls">
+      <button class="primary" id="reroll" type="button">Re-roll!</button>
+      <button id="copy" type="button">Copy</button>
+      <label class="toggle"><input type="checkbox" id="everything"> Censor everything</label>
+    </div>
+    <div class="presets" aria-label="Example rants">
+      <button type="button">The damn wifi is down AGAIN!!</button>
+      <button type="button">who left this shit in the fridge</button>
+      <button type="button">STUBBED MY TOE ON THE BLOODY BED FRAME, FUCK!</button>
+      <button type="button">Have a lovely day :)</button>
+    </div>
+  </section>
+
+  <section class="stage" aria-live="polite">
+    <div class="burst" id="burst">POW!</div>
+    <div class="bubble empty" id="bubble">…</div>
+  </section>
+
+  <div class="meter">
+    <span class="meter-label">Rage meter</span>
+    <div class="bar" role="meter" aria-label="Rage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar"><div class="fill" id="fill"></div></div>
+    <span class="verdict" id="verdict">Zen</span>
+  </div>
+
+  <footer>
+    Underneath it all is <code>grawlix.js</code>, a profanity filter with no dependencies.
+    It runs in the browser and in Node: <code>censor("oh shit")</code> → <code>"oh @#☠%"</code>.
+  </footer>
+</main>
+
+<script type="module">
+  import { tokenize, grawlix, rage } from './grawlix.js';
+
+  const $ = (id) => document.getElementById(id);
+  const input = $('input'), bubble = $('bubble'), everything = $('everything');
+  const fill = $('fill'), bar = $('bar'), verdict = $('verdict'), burst = $('burst');
+
+  const VERDICTS = [
+    [0, 'Zen'], [1, 'Mildly miffed'], [25, 'Grumpy'], [45, 'Steaming'],
+    [65, 'Livid'], [85, 'NUCLEAR'],
+  ];
+
+  let parts = [];
+
+  function render() {
+    bubble.replaceChildren();
+    bubble.className = 'bubble';
+    const text = input.value.trim();
+    if (!text) {
+      bubble.className = 'bubble empty';
+      bubble.textContent = '…';
+    } else {
+      const line = document.createElement('p');
+      line.style.margin = '0';
+      bubble.append(line);
+      for (const p of parts) {
+        if (!p.profane) { line.append(p.text); continue; }
+        const g = document.createElement('span');
+        g.className = 'g';
+        g.tabIndex = 0;
+        g.dataset.word = p.text;
+        g.setAttribute('aria-label', 'censored');
+        for (const ch of p.replacement) {
+          const s = document.createElement('span');
+          s.textContent = ch;
+          g.append(s);
+        }
+        line.append(g);
+      }
+    }
+    const score = everything.checked && text ? 100 : rage(text);
+    fill.style.width = score + '%';
+    bar.setAttribute('aria-valuenow', score);
+    verdict.textContent = VERDICTS.filter(([min]) => score >= min).pop()[1];
+    bubble.classList.toggle('fury', score >= 85);
+    burst.classList.toggle('show', parts.some((p) => p.profane));
+  }
+
+  function update() {
+    parts = tokenize(input.value.trim(), { everything: everything.checked });
+    render();
+  }
+
+  // Swap fresh symbols in place, keeping the same words.
+  function reroll() {
+    parts = parts.map((p) => p.profane ? { ...p, replacement: grawlix(p.text.length) } : p);
+    render();
+  }
+
+  input.addEventListener('input', update);
+  everything.addEventListener('change', update);
+  $('reroll').addEventListener('click', reroll);
+  $('copy').addEventListener('click', async (e) => {
+    const out = parts.map((p) => p.replacement ?? p.text).join('');
+    try { await navigator.clipboard.writeText(out); e.target.textContent = 'Copied!'; }
+    catch { e.target.textContent = 'Nope'; }
+    setTimeout(() => (e.target.textContent = 'Copy'), 1200);
+  });
+  document.querySelectorAll('.presets button').forEach((b) =>
+    b.addEventListener('click', () => { input.value = b.textContent; update(); input.focus(); }));
+
+  // Grawlix keep bubbling: re-roll on their own every few seconds while you watch.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(() => { if (parts.some((p) => p.profane) && document.activeElement?.className !== 'g') reroll(); }, 1800);
+  }
+
+  input.value = 'STUBBED MY TOE ON THE BLOODY BED FRAME, FUCK!';
+  update();
+</script>
+</body>
+</html>

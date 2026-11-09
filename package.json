@@ -1,0 +1,9 @@
+{
+  "name": "grawlix-machine",
+  "version": "1.0.0",
+  "description": "Turn profanity into comic-strip symbol swearing (@#$%&!)",
+  "type": "module",
+  "main": "grawlix.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "license": "MIT"
+}

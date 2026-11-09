@@ -6,6 +6,7 @@ that stands in for a swear word is called a **grawlix**.
 - Speech bubble where the symbols jitter and re-roll every couple of seconds
 - Hover or focus a grawlix to see the word underneath
 - **Rage meter** that scores swears, CAPS and exclamation marks (Zen → NUCLEAR)
+- A 1950s pinup who says it: calm smile, then arched brows, a flush, a shout, and steam at NUCLEAR
 - "Censor everything" mode, copy to clipboard, light and dark themes
 
 ## Run it

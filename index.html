@@ -95,7 +95,7 @@
   .toggle input { width: 20px; height: 20px; accent-color: var(--pow); }
 
   /* Speech bubble */
-  .stage { position: relative; padding-bottom: 70px; }
+  .stage { position: relative; padding-bottom: 8px; }
   .bubble {
     position: relative;
     background: var(--bubble);
@@ -162,6 +162,43 @@
     75% { transform: translate(-2px, -3px) rotate(-.3deg); }
   }
 
+
+  /* The speaker: a 1950s pinup in a polka-dot dress whose face follows the rage meter */
+  .speaker {
+    display: block;
+    width: min(280px, 66vw);
+    height: auto;
+    margin: 6px 0 0 calc(22% - 92px);
+    overflow: visible;
+  }
+  .speaker .ln { stroke: #1d1410; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .speaker .brow { fill: none; stroke: #1d1410; stroke-width: 4; stroke-linecap: round; transition: transform .25s; }
+  .speaker .brow-l { transform-origin: 96px 100px; }
+  .speaker .brow-r { transform-origin: 164px 100px; }
+  .speaker .flush { fill: #e8352b; opacity: 0; transition: opacity .3s; }
+  .speaker .mouth, .speaker .steam, .speaker .vein { display: none; }
+  .speaker[data-mood="calm"] .m-smile,
+  .speaker[data-mood="miffed"] .m-purse,
+  .speaker[data-mood="angry"] .m-shout,
+  .speaker[data-mood="nuclear"] .m-shout { display: inline; }
+  .speaker[data-mood="miffed"] .brow-l { transform: rotate(8deg); }
+  .speaker[data-mood="miffed"] .brow-r { transform: rotate(-8deg); }
+  .speaker[data-mood="miffed"] .flush { opacity: .08; }
+  .speaker[data-mood="angry"] .brow-l, .speaker[data-mood="nuclear"] .brow-l { transform: rotate(20deg); }
+  .speaker[data-mood="angry"] .brow-r, .speaker[data-mood="nuclear"] .brow-r { transform: rotate(-20deg); }
+  .speaker[data-mood="angry"] .flush { opacity: .22; }
+  .speaker[data-mood="angry"] .vein, .speaker[data-mood="nuclear"] .vein { display: inline; }
+  .speaker[data-mood="nuclear"] .flush { opacity: .4; }
+  .speaker[data-mood="nuclear"] .steam { display: inline; animation: puff 1s ease-out infinite; }
+  .speaker[data-mood="nuclear"] .steam-r { animation-delay: -.5s; }
+  .speaker[data-mood="nuclear"] .head { animation: quake .3s infinite; transform-origin: 130px 200px; }
+  @keyframes puff {
+    0% { transform: translateY(8px) scale(.6); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translateY(-22px) scale(1.15); opacity: 0; }
+  }
+  .speaker .steam { transform-box: fill-box; transform-origin: center; }
+
   /* Rage meter */
   .meter { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
   .meter-label { font-family: Bangers, Impact, sans-serif; font-size: 22px; letter-spacing: 1px; min-width: 120px; }
@@ -203,9 +240,10 @@
     .meter-label, .verdict { min-width: 0; }
     .bubble { padding: 36px 22px; }
     .burst { font-size: 24px; padding: 18px 16px; right: 0; }
+    .speaker { margin-left: calc(22% - 70px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .g span, .bubble.fury { animation: none; }
+    .g span, .bubble.fury, .speaker .steam, .speaker .head { animation: none !important; }
   }
 </style>
 </head>
@@ -233,6 +271,68 @@
   <section class="stage" aria-live="polite">
     <div class="burst" id="burst">POW!</div>
     <div class="bubble empty" id="bubble">…</div>
+    <svg class="speaker" id="speaker" data-mood="calm" viewBox="0 0 260 280" role="img" aria-label="A 1950s pinup woman in a polka-dot dress, saying the words in the bubble">
+      <defs>
+        <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+          <rect width="16" height="16" fill="#d8322a"/>
+          <circle cx="4" cy="4" r="2.6" fill="#fff6e8"/>
+          <circle cx="12" cy="12" r="2.6" fill="#fff6e8"/>
+        </pattern>
+        <clipPath id="face"><ellipse cx="130" cy="122" rx="52" ry="60"/></clipPath>
+      </defs>
+      <!-- shoulders and dress -->
+      <path class="ln" fill="#f6c9a8" d="M40 280 C50 232 88 208 130 208 C172 208 210 232 220 280 Z"/>
+      <path class="ln" fill="#f6c9a8" d="M112 160 L112 212 Q130 224 148 212 L148 160 Z"/>
+      <path class="ln" fill="url(#dots)" d="M32 280 C38 244 66 226 98 222 Q130 256 162 222 C194 226 222 244 228 280 Z"/>
+      <path class="ln" fill="none" d="M98 222 Q104 214 112 210 M162 222 Q156 214 148 210"/>
+      <g class="head">
+        <!-- back hair -->
+        <path class="ln" fill="#2a1a14" d="M74 128 C62 66 98 42 130 42 C162 42 198 66 186 128 C192 156 188 176 176 188 C166 172 172 152 174 138 L86 138 C88 152 94 172 84 188 C72 176 68 156 74 128 Z"/>
+        <circle class="ln" fill="#2a1a14" cx="82" cy="182" r="14"/>
+        <circle class="ln" fill="#2a1a14" cx="178" cy="182" r="14"/>
+        <!-- ears and pearls -->
+        <ellipse class="ln" fill="#f6c9a8" cx="79" cy="128" rx="8" ry="12"/>
+        <ellipse class="ln" fill="#f6c9a8" cx="181" cy="128" rx="8" ry="12"/>
+        <circle class="ln" fill="#fffaf0" cx="79" cy="146" r="5"/>
+        <circle class="ln" fill="#fffaf0" cx="181" cy="146" r="5"/>
+        <!-- face -->
+        <ellipse class="ln" fill="#f6c9a8" cx="130" cy="122" rx="52" ry="60"/>
+        <ellipse class="flush" cx="130" cy="122" rx="52" ry="60" clip-path="url(#face)"/>
+        <circle fill="#f08a8a" opacity=".55" cx="98" cy="142" r="9"/>
+        <circle fill="#f08a8a" opacity=".55" cx="162" cy="142" r="9"/>
+        <!-- victory rolls and bangs -->
+        <path class="ln" fill="#2a1a14" d="M80 98 C84 66 110 58 130 72 C150 58 176 66 180 98 C166 84 146 82 130 90 C114 82 94 84 80 98 Z"/>
+        <circle class="ln" fill="#2a1a14" cx="96" cy="60" r="28"/>
+        <circle class="ln" fill="#2a1a14" cx="164" cy="60" r="28"/>
+        <path fill="none" stroke="#6b4632" stroke-width="2.5" stroke-linecap="round" d="M96 46 a14 14 0 1 1 -14 14 M164 46 a14 14 0 1 0 14 14"/>
+        <!-- polka-dot bow -->
+        <path class="ln" fill="url(#dots)" d="M130 40 L104 26 Q97 40 104 54 Z M130 40 L156 26 Q163 40 156 54 Z"/>
+        <circle class="ln" fill="#d8322a" cx="130" cy="40" r="7"/>
+        <!-- anger vein -->
+        <path class="vein" fill="none" stroke="#e8352b" stroke-width="3.5" stroke-linecap="round" d="M166 82 q4 4 0 8 M174 82 q-4 4 0 8 M164 92 q4 -4 8 0 M164 80 q4 4 8 0"/>
+        <!-- eyes -->
+        <ellipse class="ln" fill="#fff" cx="108" cy="120" rx="11" ry="8"/>
+        <ellipse class="ln" fill="#fff" cx="152" cy="120" rx="11" ry="8"/>
+        <circle fill="#3a6fb0" cx="109" cy="121" r="6"/><circle fill="#111" cx="109" cy="121" r="3"/><circle fill="#fff" cx="111" cy="119" r="1.5"/>
+        <circle fill="#3a6fb0" cx="151" cy="121" r="6"/><circle fill="#111" cx="151" cy="121" r="3"/><circle fill="#fff" cx="153" cy="119" r="1.5"/>
+        <path fill="none" stroke="#1d1410" stroke-width="3.5" stroke-linecap="round" d="M95 117 Q108 106 121 116 M95 117 L88 111 M139 116 Q152 106 165 117 M165 117 L172 111"/>
+        <path class="brow brow-l" d="M96 100 Q108 91 120 98"/>
+        <path class="brow brow-r" d="M140 98 Q152 91 164 100"/>
+        <!-- nose and beauty mark -->
+        <path fill="none" stroke="#b9805e" stroke-width="2.5" stroke-linecap="round" d="M129 128 Q133 138 126 140"/>
+        <circle fill="#2a1a14" cx="157" cy="153" r="2"/>
+        <!-- mouths, one per mood -->
+        <path class="mouth m-smile ln" fill="#d0202a" d="M113 153 Q122 148 130 151 Q138 148 147 153 Q130 168 113 153 Z"/>
+        <path class="mouth m-purse ln" fill="#d0202a" d="M118 157 Q124 152 130 155 Q136 152 142 157 Q130 162 118 157 Z"/>
+        <g class="mouth m-shout">
+          <ellipse fill="#5a1010" stroke="#d0202a" stroke-width="5" cx="130" cy="160" rx="13" ry="11"/>
+          <rect fill="#fff" x="122" y="151" width="16" height="4" rx="1"/>
+        </g>
+      </g>
+      <!-- steam -->
+      <g class="steam steam-l"><circle class="ln" fill="#fff" cx="52" cy="78" r="9"/><circle class="ln" fill="#fff" cx="42" cy="64" r="11"/><circle class="ln" fill="#fff" cx="54" cy="52" r="8"/></g>
+      <g class="steam steam-r"><circle class="ln" fill="#fff" cx="208" cy="78" r="9"/><circle class="ln" fill="#fff" cx="218" cy="64" r="11"/><circle class="ln" fill="#fff" cx="206" cy="52" r="8"/></g>
+    </svg>
   </section>
 
   <div class="meter">
@@ -252,7 +352,7 @@
 
   const $ = (id) => document.getElementById(id);
   const input = $('input'), bubble = $('bubble'), everything = $('everything');
-  const fill = $('fill'), bar = $('bar'), verdict = $('verdict'), burst = $('burst');
+  const speaker = $('speaker'), fill = $('fill'), bar = $('bar'), verdict = $('verdict'), burst = $('burst');
 
   const VERDICTS = [
     [0, 'Zen'], [1, 'Mildly miffed'], [25, 'Grumpy'], [45, 'Steaming'],
@@ -292,6 +392,7 @@
     bar.setAttribute('aria-valuenow', score);
     verdict.textContent = VERDICTS.filter(([min]) => score >= min).pop()[1];
     bubble.classList.toggle('fury', score >= 85);
+    speaker.dataset.mood = score >= 85 ? 'nuclear' : score >= 45 ? 'angry' : score >= 15 ? 'miffed' : 'calm';
     burst.classList.toggle('show', parts.some((p) => p.profane));
   }
 

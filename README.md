@@ -33,3 +33,18 @@ rage('WHAT THE HELL!!!');              // 0–100
 ```sh
 npm test
 ```
+
+---
+
+# Bramblewood (game)
+
+An original side-scrolling platformer that runs in the browser, built for iPhone. Pip, a tiny
+seedling, relights six lanterns across Bramblewood: meadow, hills, a honey-hive cave, the
+treetop canopy, a dusk marsh and Thorn Keep.
+
+- Touch controls (◀ ▶, **B** run/throw, **A** jump) in portrait or landscape; keyboard on desktop
+- Hive blocks give dew (100 = extra life), golden acorns (grow + glide), ember seeds (boomerang throw)
+- World map, saved progress, chiptune-style sound
+
+Play it: serve the folder (`python3 -m http.server`) and open `/bramblewood/` in Safari, then
+**Share → Add to Home Screen** to launch it full-screen like an app.
